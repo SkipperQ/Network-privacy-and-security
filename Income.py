@@ -5,7 +5,7 @@ import numpy as np
 url = "https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data"
 columns = [
     "age", "workclass", "fnlwgt", "education", "education-num",
-    "marital-status", "occupation", "relationship", "race", "sex",
+    "marital-status", "occupation", "relationship", "ethnicity", "gender",
     "capital-gain", "capital-loss", "hours-per-week", "native-country", "income"
 ]
 
@@ -13,7 +13,7 @@ columns = [
 df = pd.read_csv(url, names=columns, sep=",\\s*", engine="python")
 
 # Simplify the dataset for demonstration
-df = df[["age", "workclass", "sex", "race", "income"]].copy()
+df = df[["age", "workclass", "gender", "ethnicity", "income"]].copy()
 
 # Remove missing values
 df = df[df != '?'].dropna()
@@ -45,7 +45,7 @@ def apply_l_diversity(data, quasi_identifiers, sensitive_attribute, l):
     return data.groupby(quasi_identifiers).filter(lambda x: suppress(x) is not None)
 
 # Define quasi-identifiers and sensitive attribute
-quasi_identifiers = ["age", "workclass", "sex"]
+quasi_identifiers = ["age", "workclass", "gender"]
 sensitive_attribute = "income"
 
 # Check initial k-anonymity and l-diversity
