@@ -1,0 +1,101 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\title{Exploring Anonymization Methods}
+\author{\IEEEauthorblockN{Tianci Xie and Haochun Qi}}
+
+\begin{document}
+	
+	\maketitle
+	
+	\begin{abstract}
+		Anonymization is a critical technique in preserving privacy in datasets. This report explores the implementation and evaluation of two privacy-preserving methods: \textbf{k-anonymity} and \textbf{l-diversity}. Two different cases were examined: the first focused on iterative generalization and suppression techniques to achieve both k-anonymity and l-diversity, while the second case demonstrated an alternative anonymization approach with seemingly error-free implementation. 
+	\end{abstract}
+	
+	\section{Introduction}
+	In the era of big data, maintaining the privacy of individuals is of paramount importance. Data anonymization techniques aim to protect sensitive information while preserving the utility of datasets for analysis. This project focuses on two widely used anonymization techniques:
+	\begin{itemize}
+		\item \textbf{k-Anonymity}: Ensures that each individual is indistinguishable from at least $k-1$ others based on quasi-identifiers.
+		\item \textbf{l-Diversity}: Extends k-anonymity by ensuring that sensitive attributes have at least $l$ distinct values within each group defined by quasi-identifiers.
+	\end{itemize}
+	
+	\section{Methodology}
+	Two cases were implemented to evaluate anonymization techniques.
+	
+	\subsection{Case 1: Iterative Generalization and Suppression}
+	In this case, the dataset was generated with the following attributes:
+	\begin{itemize}
+		\item \textbf{Age}: Random integer between 20 and 80.
+		\item \textbf{ZIP Code}: Random integer between 12340 and 12349.
+		\item \textbf{Gender}: Random choice of ``Male'' or ``Female''.
+		\item \textbf{Disease}: Random choice from \{``Flu'', ``Diabetes'', ``Cancer'', ``Hypertension''\}.
+	\end{itemize}
+	
+	The following steps were applied:
+	\begin{enumerate}
+		\item \textbf{Generate Dataset}: Created a synthetic dataset with 100 records using a Python function that randomly assigns values to the attributes. The dataset ensures diversity in both quasi-identifiers and sensitive attributes.
+		\item \textbf{k-Anonymity Check}: Grouped records based on quasi-identifiers (``Age'', ``ZIP Code'', ``Gender'') and computed the size of each group. The minimum group size determines the current k-anonymity level of the dataset.
+		\item \textbf{l-Diversity Check}: Evaluated diversity within groups by calculating the number of unique values of the sensitive attribute (``Disease'') in each group. The minimum diversity across groups determines the l-diversity of the dataset.
+		\item \textbf{Anonymization Techniques}:
+		\begin{itemize}
+			\item \textbf{Generalizing ZIP Code}: Applied a masking function that replaces the last two digits of the ZIP Code with asterisks (e.g., 12345 becomes 123**). This step reduces the granularity of location data.
+			\item \textbf{Generalizing Age}: Reduced precision by grouping ages into 10-year intervals (e.g., 25 becomes 20, 67 becomes 60). This iterative process continues until k-anonymity is achieved.
+			\item \textbf{Suppressing Rows}: For groups that fail the l-diversity requirement, rows were removed entirely to ensure that all remaining groups meet the diversity threshold.
+		\end{itemize}
+	\end{enumerate}
+	
+	\subsection{Case 2: Alternative Anonymization Implementation}
+	The second case used a pre-existing dataset that mimics realistic data distributions with the following attributes:
+	\begin{itemize}
+		\item \textbf{Age}: Age values were pre-clustered into broader intervals (e.g., 20-29, 30-39).
+		\item \textbf{ZIP Code}: Generalized by retaining only the first three digits (e.g., 12345 becomes 123**).
+		\item \textbf{Gender}: Binary values (Male/Female).
+		\item \textbf{Disease}: Sensitive attribute containing diverse values such as Flu, Cancer, and Diabetes.
+	\end{itemize}
+	
+	The following anonymization methods were applied:
+	\begin{itemize}
+		\item \textbf{Generalization}: Applied predefined masking techniques similar to Case 1 to reduce the specificity of quasi-identifiers.
+		\item \textbf{Suppression}: Identified and removed groups that failed to meet k-anonymity or l-diversity requirements. Suppression was minimal due to the pre-generalized nature of the dataset.
+	\end{itemize}
+	
+	The process for k-anonymity and l-diversity checks in Case 2 followed similar logic to Case 1 but did not require iterative modifications, as the dataset was already close to compliance upon import.
+	
+	\section{Results}
+	
+	\subsection{Case 1 Results}
+	\textbf{Initial Dataset}:
+	\begin{itemize}
+		\item k-Anonymity: The initial k-anonymity value was low due to diverse quasi-identifiers.
+		\item l-Diversity: The dataset failed to meet l-diversity requirements for many groups.
+	\end{itemize}
+	
+	\textbf{Post k-Anonymity}: Generalization increased group sizes, achieving k-anonymity with $k=2$.
+	
+	\textbf{Post l-Diversity}: Suppression ensured that all groups had at least $l=2$ distinct sensitive values.
+	
+	\subsection{Case 2 Results}
+	\begin{itemize}
+		\item The dataset satisfied both k-anonymity and l-diversity without requiring extensive iteration or suppression.
+		\item The implementation proved efficient and effective, yielding anonymized data with minimal utility loss.
+	\end{itemize}
+	
+	\section{Discussion}
+	The study reveals the trade-offs between generalization and suppression in achieving anonymization goals. While generalization preserves data utility, excessive generalization can reduce dataset quality. Suppression, on the other hand, directly reduces dataset size, which may affect statistical analyses.
+	
+	Case 1 demonstrated the iterative nature of achieving k-anonymity and l-diversity, while Case 2 showcased an alternative approach with smoother anonymization results. Both methods highlight the importance of careful parameter selection ($k$ and $l$) to balance privacy and utility.
+	
+	\section{Conclusion}
+	This project explored two approaches to anonymization using k-anonymity and l-diversity. Iterative methods provide flexibility but can be computationally intensive. Alternative implementations may achieve similar goals with reduced complexity. Future work could explore additional techniques, such as differential privacy, to further enhance privacy protections.
+	
+	\section*{References}
+	\begin{itemize}
+		\item Sweeney, L. (2002). k-Anonymity: A Model for Protecting Privacy.
+		\item Machanavajjhala, A., et al. (2007). l-Diversity: Privacy Beyond k-Anonymity.
+		\item Dwork, C. (2006). Differential Privacy.
+	\end{itemize}
+	
+\end{document}
+
