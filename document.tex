@@ -46,56 +46,47 @@
 		\end{itemize}
 	\end{enumerate}
 	
-	\subsection{Case 2: Alternative Anonymization Implementation}
-	The second case used a pre-existing dataset that mimics realistic data distributions with the following attributes:
-	\begin{itemize}
-		\item \textbf{Age}: Age values were pre-clustered into broader intervals (e.g., 20-29, 30-39).
-		\item \textbf{ZIP Code}: Generalized by retaining only the first three digits (e.g., 12345 becomes 123**).
-		\item \textbf{Gender}: Binary values (Male/Female).
-		\item \textbf{Disease}: Sensitive attribute containing diverse values such as Flu, Cancer, and Diabetes.
-	\end{itemize}
+\subsection{Case 2: Alternative Anonymization Implementation}
+
+This case used the UCI Adult Income dataset, a publicly available dataset with realistic data distributions. The dataset contains demographic and employment-related attributes. For this study, the following attributes were used: \begin{itemize} \item \textbf{Age}: Numeric values, generalized into decades for anonymization (e.g., 20-29, 30-39). \item \textbf{Workclass}: Categorical values, simplified to Public/Private'' for anonymization. \item \textbf{Gender}: Binary values (Male/Female). \item \textbf{Income}: Sensitive attribute, categorized as <=50K'' or ``>50K''. \end{itemize}
+
+The following steps were applied for anonymization: \begin{enumerate} \item \textbf{Generalization of Quasi-Identifiers:} \begin{itemize} \item \textbf{Age}: Generalized into decades by truncating the last digit (e.g., 25 becomes 20). \item \textbf{Workclass}: Simplified into a single group, ``Public/Private,'' to reduce granularity. \end{itemize} \item \textbf{k-Anonymity Check:} Groups were formed based on quasi-identifiers (Age, Workclass, Gender), and the minimum group size was checked to ensure compliance with a specified $k$ value. \item \textbf{l-Diversity Check:} For each quasi-identifier group, the number of unique values in the sensitive attribute (Income) was counted. Groups failing to meet the $l$-diversity requirement were flagged for suppression. \item \textbf{Suppression:} Groups that failed the $k$-anonymity or $l$-diversity checks were suppressed by removing their records. \end{enumerate}
+
+This approach ensured compliance with both $k$-anonymity and $l$-diversity while minimizing the loss of data utility. The transformations were straightforward and did not require iterative adjustments, as the dataset's structure was already conducive to anonymization.
+
+
+\section{Results}
+
+\subsection{Case 1 Results}
+\begin{itemize}
+	\item When $k=1, 2,$ or $3$, k-anonymity was seldomly unsuccessful. However, as $k$ increased to $4$ or higher, the failure rate rose significantly, with larger values of $k$ leading to greater failure rates.
+	\item Once k-anonymity was achieved, l-diversity could always be satisfied as long as $l \leq 4$, which matches the number of unique types of sensitive attribute values.
+\end{itemize}
+
+\subsection{Case 2 Results}
+\begin{itemize}
+	\item After applying the specified anonymization methods, the dataset achieved $k=10$ and $l=2$.
+	\item Since a pre-existing dataset and consistent anonymization techniques were used, the results remained deterministic and reproducible across trials.
+\end{itemize}
+
+\section{Discussion}
+The results highlight the differing dynamics between the two cases. In Case 1, where synthetic data and iterative transformations were used, achieving higher values of $k$ became increasingly challenging due to the need for greater generalization and suppression. The variability in success rates reflects the inherent randomness in the synthetic dataset generation and the limited diversity of quasi-identifiers.
+
+In contrast, Case 2 demonstrated a deterministic outcome due to the structured nature of the existing dataset and predefined anonymization methods. The achieved values of $k=10$ and $l=2$ indicate that the dataset was well-suited for anonymization without significant utility loss. This consistency underscores the importance of dataset structure and inherent diversity in facilitating anonymization.
+
+Furthermore, the results from Case 1 showed that once k-anonymity was achieved, l-diversity could also be satisfied within reasonable limits. This reinforces the idea that achieving k-anonymity can lay a foundation for l-diversity, provided the sensitive attribute is sufficiently diverse.
+
+\section{Conclusion}
+This study explored the application of k-anonymity and l-diversity in two distinct scenarios. Case 1 involved synthetic data and iterative methods, revealing challenges in achieving higher k-anonymity values and highlighting variability due to dataset randomness. Case 2 utilized an existing dataset and a straightforward anonymization approach, yielding consistent and deterministic results.
+
+The findings emphasize the trade-offs between generalization, suppression, and dataset utility. They also underscore the impact of dataset structure and inherent diversity on the effectiveness of anonymization methods. Future work could explore additional techniques, such as differential privacy, to address limitations and further enhance privacy protections.
+
 	
-	The following anonymization methods were applied:
-	\begin{itemize}
-		\item \textbf{Generalization}: Applied predefined masking techniques similar to Case 1 to reduce the specificity of quasi-identifiers.
-		\item \textbf{Suppression}: Identified and removed groups that failed to meet k-anonymity or l-diversity requirements. Suppression was minimal due to the pre-generalized nature of the dataset.
-	\end{itemize}
-	
-	The process for k-anonymity and l-diversity checks in Case 2 followed similar logic to Case 1 but did not require iterative modifications, as the dataset was already close to compliance upon import.
-	
-	\section{Results}
-	
-	\subsection{Case 1 Results}
-	\textbf{Initial Dataset}:
-	\begin{itemize}
-		\item k-Anonymity: The initial k-anonymity value was low due to diverse quasi-identifiers.
-		\item l-Diversity: The dataset failed to meet l-diversity requirements for many groups.
-	\end{itemize}
-	
-	\textbf{Post k-Anonymity}: Generalization increased group sizes, achieving k-anonymity with $k=2$.
-	
-	\textbf{Post l-Diversity}: Suppression ensured that all groups had at least $l=2$ distinct sensitive values.
-	
-	\subsection{Case 2 Results}
-	\begin{itemize}
-		\item The dataset satisfied both k-anonymity and l-diversity without requiring extensive iteration or suppression.
-		\item The implementation proved efficient and effective, yielding anonymized data with minimal utility loss.
-	\end{itemize}
-	
-	\section{Discussion}
-	The study reveals the trade-offs between generalization and suppression in achieving anonymization goals. While generalization preserves data utility, excessive generalization can reduce dataset quality. Suppression, on the other hand, directly reduces dataset size, which may affect statistical analyses.
-	
-	Case 1 demonstrated the iterative nature of achieving k-anonymity and l-diversity, while Case 2 showcased an alternative approach with smoother anonymization results. Both methods highlight the importance of careful parameter selection ($k$ and $l$) to balance privacy and utility.
-	
-	\section{Conclusion}
-	This project explored two approaches to anonymization using k-anonymity and l-diversity. Iterative methods provide flexibility but can be computationally intensive. Alternative implementations may achieve similar goals with reduced complexity. Future work could explore additional techniques, such as differential privacy, to further enhance privacy protections.
-	
-	\section*{References}
-	\begin{itemize}
-		\item Sweeney, L. (2002). k-Anonymity: A Model for Protecting Privacy.
-		\item Machanavajjhala, A., et al. (2007). l-Diversity: Privacy Beyond k-Anonymity.
-		\item Dwork, C. (2006). Differential Privacy.
-	\end{itemize}
+\section*{References}
+\begin{itemize}
+	\item UCI Machine Learning Repository. Adult Data Set. \url{https://archive.ics.uci.edu/ml/datasets/adult}.
+\end{itemize}
+
 	
 \end{document}
 
