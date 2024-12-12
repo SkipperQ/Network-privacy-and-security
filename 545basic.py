@@ -1,10 +1,7 @@
 import pandas as pd
-import numpy as np
-from itertools import groupby
 import random
 
-
-def generate_dataset(num_records=100):
+def generate_dataset(num_records=1000):
     data = {
         "Age": [random.randint(20, 80) for _ in range(num_records)],
         "ZIP Code": [random.randint(12340, 12349) for _ in range(num_records)],
@@ -28,10 +25,15 @@ def apply_k_anonymity(df, k, quasi_identifiers):
         return str(zip_code)[:3] + "**"
 
     df["ZIP Code"] = df["ZIP Code"].apply(generalize_zip)
+    steps = 0  # Counter for the number of generalization steps
+    max_steps = 2  # Maximum allowed steps to achieve k-anonymity
+
     while check_k_anonymity(df, quasi_identifiers) < k:
         df["Age"] = df["Age"].apply(lambda x: (x // 10) * 10)  # Generalize Age
-        if check_k_anonymity(df, quasi_identifiers) >= k:
-            break
+        steps += 1
+        if steps >= max_steps:  # Fail-safe condition
+            print(f"Failed to achieve k-anonymity for k={k} after {steps} steps.")
+            return None  # Indicating failure
     return df
 
 def apply_l_diversity(df, l, quasi_identifiers, sensitive_attribute):
@@ -59,17 +61,20 @@ def main():
     print(f"Initial k-anonymity: {k}")
     print(f"Initial l-diversity: {l}")
 
-    desired_k = 2
+    desired_k = 3
     df_k_anonymous = apply_k_anonymity(df.copy(), desired_k, quasi_identifiers)
 
-    print(f"Dataset after applying k-anonymity (k={desired_k}):")
-    print(df_k_anonymous)
+    if df_k_anonymous is None:
+        print(f"Failed to apply k-anonymity for k={desired_k}.")
+    else:
+        print(f"Dataset after applying k-anonymity (k={desired_k}):")
+        print(df_k_anonymous)
 
-    desired_l = 2
-    df_l_diverse = apply_l_diversity(df_k_anonymous.copy(), desired_l, quasi_identifiers, sensitive_attribute)
+        desired_l = 2
+        df_l_diverse = apply_l_diversity(df_k_anonymous.copy(), desired_l, quasi_identifiers, sensitive_attribute)
 
-    print(f"Dataset after applying l-diversity (l={desired_l}):")
-    print(df_l_diverse)
+        print(f"Dataset after applying l-diversity (l={desired_l}):")
+        print(df_l_diverse)
 
 if __name__ == "__main__":
     main()
